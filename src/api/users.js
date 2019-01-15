@@ -13,7 +13,7 @@ const apiUsers = express.Router();
  * @apiGroup Users
  *
  * @apiParam {STRING} email Email of the User.
- * @apiParam {STRING} password  Password of the User.
+ * @apiParam {STRING} password  Password of the User.k
  * @apiParam {STRING} [firstName] First name of the User.
  * @apiParam {STRING} [lastName] Last name of the User.
  *
