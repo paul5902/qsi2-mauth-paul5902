@@ -1,35 +1,18 @@
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
+const fs = require("fs");
+const path = require("path");
+const Sequelize = require("sequelize");
 
 const db = {};
 const basename = path.basename(module.filename);
 
-// const sequelize = new Sequelize(process.env.DATABASE_URL);
-
-const sequelize = new Sequelize('database', 'username', 'password', {
-  host: 'localhost',
-  dialect: 'sqlite',
-  operatorsAliases: false,
-
-  pool: {
-    max: 5,
-    min: 0,
-    acquire: 30000,
-    idle: 10000
-  },
-
-  // SQLite only
-  storage: 'tp.sql'
-});
-
+const sequelize = new Sequelize(process.env.DATABASE_URL);
 fs.readdirSync(__dirname)
   .filter(
     file =>
-      file.indexOf('.') !== 0 &&
+      file.indexOf(".") !== 0 &&
       file !== basename &&
-      file.slice(-3) === '.js' &&
-      file.indexOf('triggers') === -1
+      file.slice(-3) === ".js" &&
+      file.indexOf("triggers") === -1
   )
   .forEach(file => {
     const model = sequelize.import(path.join(__dirname, file));

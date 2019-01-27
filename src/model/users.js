@@ -1,34 +1,34 @@
-const bcrypt = require('bcrypt'); // https://github.com/kelektiv/node.bcrypt.js
+const bcrypt = require("bcrypt"); // https://github.com/kelektiv/node.bcrypt.js
 
 module.exports = (sequelize, DataTypes) => {
   const Users = sequelize.define(
-    'Users',
+    "Users",
     {
       id: {
         // Avoid usage of auto-increment numbers, UUID is a better choice
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
-        comment: 'User ID',
+        comment: "User ID",
         primaryKey: true
       },
       firstName: {
         type: DataTypes.STRING,
-        comment: 'User first name',
+        comment: "User first name",
         // setter to standardize
         set(val) {
           this.setDataValue(
-            'firstName',
+            "firstName",
             val.charAt(0).toUpperCase() + val.substring(1).toLowerCase()
           );
         }
       },
       lastName: {
         type: DataTypes.STRING,
-        comment: 'User last name',
+        comment: "User last name",
         // setter to standardize
         set(val) {
           this.setDataValue(
-            'lastName',
+            "lastName",
             val.charAt(0).toUpperCase() + val.substring(1).toLowerCase()
           );
         }
@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         // Not null management
         allowNull: false,
-        comment: 'User email',
+        comment: "User email",
         // Field validation
         validate: {
           isEmail: true
@@ -46,11 +46,11 @@ module.exports = (sequelize, DataTypes) => {
       hash: {
         type: DataTypes.STRING,
         allowNull: false,
-        comment: 'Hash for the user password',
+        comment: "Hash for the user password",
         // setter to hash the password
         set(val) {
           const hash = bcrypt.hashSync(val, 12);
-          this.setDataValue('hash', hash);
+          this.setDataValue("hash", hash);
         }
       }
     },
@@ -60,14 +60,14 @@ module.exports = (sequelize, DataTypes) => {
       indexes: [
         {
           unique: true,
-          fields: ['email']
+          fields: ["email"]
         }
       ]
     }
   );
 
   // we don't want to send password even if crypted
-  Users.excludeAttributes = ['hash'];
+  Users.excludeAttributes = ["hash"];
 
   // anonymous function mandatody to access this in instance method
   /* eslint func-names:off */
@@ -75,11 +75,16 @@ module.exports = (sequelize, DataTypes) => {
     return new Promise((resolve, reject) => {
       bcrypt.compare(password, this.hash, (err, res) => {
         if (err || !res) {
-          return reject(new Error('INVALID CREDENTIALS'));
+          return reject(new Error("INVALID CREDENTIALS"));
         }
         return resolve();
       });
     });
+  };
+
+  Users.associate = models => {
+    Users.hasOne(models.Group, { foreignKey: "owner_id", as: "Owner" });
+    Users.belongsToMany(models.Group, { through: "Member" });
   };
 
   return Users;
